@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MLatenessApp.iml" filepath="$PROJECT_DIR$/.idea/modules/MLatenessApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MLatenessApp_main.iml" filepath="$PROJECT_DIR$/.idea/modules/MLatenessApp_main.iml" group="MLatenessApp" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MLatenessApp_test.iml" filepath="$PROJECT_DIR$/.idea/modules/MLatenessApp_test.iml" group="MLatenessApp" />
+    </modules>
+  </component>
+</project>

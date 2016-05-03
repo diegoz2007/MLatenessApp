@@ -1,0 +1,94 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+        http://www.springframework.org/schema/data/mongo
+        http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <context:annotation-config/>
+    <task:annotation-driven/>
+
+    <bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="jacksonMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+    <context:component-scan base-package="com.nisum.manage.controller" />
+    <context:component-scan base-package="com.nisum.manage.service" />
+    <context:component-scan base-package="com.nisum.manage.persistence" />
+    <context:component-scan base-package="com.nisum.manage.persistence.repositories" />
+
+    <context:property-placeholder location="classpath:config.properties" />
+
+
+
+    <bean id="asServices" class="com.nisum.manage.service.ArriveStatusServicesImpl"></bean>
+    <bean id="mailServices" class="com.nisum.manage.service.scheduler.NotificationSchedulerServiceImpl"></bean>
+    <bean id="purgeServices" class="com.nisum.manage.service.scheduler.PurgeSchedulerServiceImpl"></bean>
+    <bean id="emailUtils" class="com.nisum.manage.util.EmailUtils"></bean>
+
+    <task:scheduled-tasks>
+        <task:scheduled ref="purgeServices"  method="serviceMethodToPurge" fixed-delay="${purge.scheduler.configured.time}" />
+        <task:scheduled ref="mailServices" method="serviceMethodToNotification" fixed-delay="${mail.scheduler.configured.time}" />
+    </task:scheduled-tasks>
+
+
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+
+        <property name="host" value="smtp.gmail.com" />
+        <property name="port" value="587" />
+        <property name="username" value="donotreply-saschile@nisum.com" />
+        <property name="password" value="Sa&amp;Ce@2477$" />
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.transport.protocol">smtp</prop>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+            </props>
+        </property>
+    </bean>
+
+
+    <!-- Configuration defining views files -->
+
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix">
+            <value>/WEB-INF/views/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+
+    </bean>
+
+    <!-- Factory bean that creates the Mongo instance -->
+    <bean id="mongo" class="org.springframework.data.mongodb.core.MongoFactoryBean">
+        <property name="host" value="localhost" />
+    </bean>
+
+    <!-- MongoTemplate for connecting and quering the documents in the database -->
+
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg name="mongo" ref="mongo" />
+        <constructor-arg name="databaseName" value="data" />
+    </bean>
+
+    <mongo:repositories base-package="com.nisum.manage.persistence.repositories" />
+
+</beans>
