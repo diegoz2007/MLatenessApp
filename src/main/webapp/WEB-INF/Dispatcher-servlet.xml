@@ -41,10 +41,10 @@
     <bean id="purgeServices" class="com.nisum.manage.service.scheduler.PurgeSchedulerServiceImpl"></bean>
     <bean id="emailUtils" class="com.nisum.manage.util.EmailUtils"></bean>
 
-    <task:scheduled-tasks>
+<!--    <task:scheduled-tasks>
         <task:scheduled ref="purgeServices"  method="serviceMethodToPurge" fixed-delay="${purge.scheduler.configured.time}" />
         <task:scheduled ref="mailServices" method="serviceMethodToNotification" fixed-delay="${mail.scheduler.configured.time}" />
-    </task:scheduled-tasks>
+    </task:scheduled-tasks>-->
 
 
 
