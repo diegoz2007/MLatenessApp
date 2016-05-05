@@ -4,6 +4,8 @@ import com.nisum.manage.persistence.ArriveStatus;
 import com.nisum.manage.service.ArriveStatusServices;
 import com.nisum.manage.util.EmailUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -17,6 +19,12 @@ public class NotificationSchedulerServiceImpl implements NotificationSchedulerSe
 
     private static Logger logger= Logger.getLogger(NotificationSchedulerServiceImpl.class.toString());
 
+    @Value("${mail.notification.sender}")
+    private String senderEmail;
+
+    @Value("${mail.message}")
+    private String messageToSend;
+
     @Autowired
     private EmailUtils emailUtils;
 
@@ -24,7 +32,7 @@ public class NotificationSchedulerServiceImpl implements NotificationSchedulerSe
     private ArriveStatusServices asServices;
 
     @Override
-    /*@Scheduled(fixedDelay = 120000)*/
+    @Scheduled(fixedDelayString = "${mail.notification.fixedDelay.in.milliseconds}")
     public void serviceMethodToNotification() {
 
         logger.info("Method scheduled for executed at every ..  AND WILL SEND AN EMAIL TO THE EMPLOYEE WITH LATENEES.");
@@ -37,7 +45,7 @@ public class NotificationSchedulerServiceImpl implements NotificationSchedulerSe
             if(basicDBObjects==null || basicDBObjects.size()==0 )
                    return;
 
-            emailUtils.sendMail("donotreply-saschile@nisum.com",recipientList(basicDBObjects),"Please do not be late!","<h1>Please do not be late, it will be deducted from your paycheck! :)</h1>");
+            emailUtils.sendMail(senderEmail,recipientList(basicDBObjects),"Please do not be late!",messageToSend);
         } catch (ParseException e) {
             e.printStackTrace();
         }
